@@ -1,0 +1,103 @@
+---
+title: "Documentation for grades_analysis.R"
+author: "Ibukun_Fawole"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# AI Assistance Declaration
+
+**AI Assistance Declaration:** I used ChatGPT (GPT-5.5) to help draft and format this R Markdown document. I reviewed and verified the final content before submission. I am responsible for the accuracy and originality of this work.
+
+# Purpose
+
+The purpose of `grades_analysis.R` is to analyze a synthetic student grades dataset. The script summarizes student performance, calculates subject averages, identifies students who may be at risk of failing, and produces a visualization of average scores by subject.
+
+# Required Packages
+
+The script requires the following R packages:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+# Input
+
+The script creates its own synthetic dataset using fictional student names and randomly generated grades. No external data files are required.
+
+# Processing Steps
+
+The script performs the following tasks:
+
+1. Loads the required packages.
+2. Creates a synthetic dataset of student grades.
+3. Calculates summary statistics for each student.
+4. Calculates average scores for each subject.
+5. Identifies students whose average score is below 60.
+6. Produces a bar chart showing average scores by subject.
+7. Prints all results to the console.
+
+# Main Code
+
+```{r}
+# Load libraries
+library(dplyr)
+library(ggplot2)
+
+# Create synthetic dataset
+set.seed(42)
+
+students <- c("Ava","Ben","Carlos","Dana","Elijah",
+              "Fatima","Grace","Hiro","Isla","Jamal")
+
+subjects <- c("Math","Science","English")
+
+grades <- expand.grid(student = students,
+                      subject = subjects) %>%
+  mutate(score = round(rnorm(n(), mean = 75, sd = 12)),
+         score = pmin(pmax(score,0),100))
+
+student_summary <- grades %>%
+  group_by(student) %>%
+  summarise(
+    average_score = round(mean(score),1),
+    min_score = min(score),
+    max_score = max(score)
+  )
+
+subject_summary <- grades %>%
+  group_by(subject) %>%
+  summarise(average_score = round(mean(score),1))
+
+at_risk <- student_summary %>%
+  filter(average_score < 60)
+
+subject_plot <- ggplot(subject_summary,
+                       aes(x = subject,
+                           y = average_score,
+                           fill = subject)) +
+  geom_col() +
+  labs(title = "Average Score by Subject",
+       x = "Subject",
+       y = "Average Score") +
+  theme_minimal()
+
+student_summary
+subject_summary
+at_risk
+subject_plot
+```
+
+# Outputs
+
+The script produces:
+
+- Student performance summary
+- Subject performance summary
+- List of at-risk students
+- Bar chart of average score by subject
+
+# Conclusion
+
+This project demonstrates how R can be used to generate synthetic data, summarize information, identify students who may require additional support, and present results visually using `ggplot2`. The project also illustrates good documentation practices through R Markdown.
